@@ -4,6 +4,7 @@ import gzip
 import hashlib
 import json
 from email.utils import parsedate_to_datetime
+from http.client import HTTPException
 from pathlib import Path
 import re
 import shutil
@@ -13,6 +14,8 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 CHUNK = 30000
+RANGE_BYTES = 8 * 1024 * 1024
+RANGE_RETRIES = 6
 
 
 def normalize(*parts):
@@ -37,30 +40,83 @@ def write(path, value):
 
 
 def download(source, path, local):
-    """Check both Content-Length and source format before using the snapshot."""
+    """Fetch an immutable CSV in verified segments, with an ordinary GET fallback."""
     if local:
         staged = local / path.name
         if not staged.is_file():
             raise ValueError(f"Missing local source: {staged}")
         return staged, None
-    for attempt in range(3):
+
+    offset, total, failures = 0, None, 0
+    validator, modified = None, None
+    version_changes = 0
+    while total is None or offset < total:
+        end = offset + RANGE_BYTES - 1
+        headers = {
+            "User-Agent": "CoolCode archive snapshot builder/1.0",
+            "Accept-Encoding": "identity",
+            "Range": f"bytes={offset}-{end}",
+        }
+        if validator:
+            headers["If-Range"] = validator
         try:
-            request = Request(source, headers={"User-Agent": "CoolCode archive snapshot builder/1.0"})
-            with urlopen(request, timeout=70) as response, path.open("wb") as stream:
+            with urlopen(Request(source, headers=headers), timeout=70) as response:
                 if urlparse(response.url).scheme != "https" or response.headers.get_content_type().startswith("text/html"):
-                    raise ValueError(f"Unexpected download response for {source}")
-                shutil.copyfileobj(response, stream, length=1024 * 1024)
-                byte_count = response.headers.get("Content-Length")
-                if byte_count and path.stat().st_size != int(byte_count):
-                    raise ValueError(f"Incomplete download of {source}")
-                modified = response.headers.get("Last-Modified")
-                updated = parsedate_to_datetime(modified).date().isoformat() if modified else None
-                return path, updated
-        except (OSError, ValueError) as error:
-            if attempt == 2:
-                raise RuntimeError(f"Could not fetch {source}: {error}") from error
-            print(f"Retrying {source}: {error}", flush=True)
-            time.sleep(2 ** attempt)
+                    raise ValueError("Unexpected CSV download response.")
+                if response.headers.get("Content-Encoding", "identity").lower() != "identity":
+                    raise ValueError("Range response is unexpectedly content-encoded.")
+                current_modified = response.headers.get("Last-Modified")
+                if response.status == 200:
+                    # A server can ignore Range or return the entire new version for If-Range.
+                    # Do not append such a response to old bytes.
+                    staged = path.with_name(f"{path.name}.full")
+                    expected = int(response.headers.get("Content-Length", "0"))
+                    with staged.open("wb") as stream:
+                        shutil.copyfileobj(response, stream, length=1024 * 1024)
+                    actual = staged.stat().st_size
+                    if expected <= 0 or actual != expected:
+                        raise ValueError(f"Full response had {actual:,} of {expected:,} expected bytes.")
+                    staged.replace(path)
+                    offset = total = expected
+                    modified = current_modified
+                    break
+                match = re.fullmatch(r"bytes (\d+)-(\d+)/(\d+)", response.headers.get("Content-Range", ""))
+                if response.status != 206 or not match:
+                    raise ValueError(f"Invalid byte-range response (HTTP {response.status}).")
+                begin, stop, current_total = map(int, match.groups())
+                if begin != offset or stop != min(end, current_total - 1) or stop < begin:
+                    raise ValueError(f"Unexpected byte range {begin}-{stop}/{current_total}.")
+                etag = response.headers.get("ETag", "")
+                current_validator = etag if etag.startswith('"') else current_modified
+                if total is not None and (total != current_total or validator != current_validator):
+                    version_changes += 1
+                    if version_changes > 2:
+                        raise RuntimeError(f"CSV source kept changing during download: {source}")
+                    offset, total, validator = 0, None, None
+                    raise ValueError("CSV version changed between byte ranges. Starting over.")
+                if stop + 1 < current_total and not current_validator:
+                    raise ValueError("The source did not publish a version validator for this multi-part CSV.")
+                expected = stop - begin + 1
+                data = response.read(expected + 1)
+                if len(data) != expected:
+                    raise ValueError(f"Range had {len(data):,} of {expected:,} expected bytes.")
+                with path.open("r+b" if offset else "wb") as stream:
+                    stream.seek(offset)
+                    stream.write(data)
+                    stream.truncate()
+                offset, total = stop + 1, current_total
+                validator, modified = current_validator, current_modified
+                failures = 0
+        except (OSError, ValueError, HTTPException) as error:
+            failures += 1
+            if failures == RANGE_RETRIES:
+                raise RuntimeError(f"Could not fetch {source} at byte {offset:,}: {error}") from error
+            print(f"Retrying {source} at byte {offset:,}: {error}", flush=True)
+            time.sleep(min(16, 2 ** (failures - 1)))
+    if path.stat().st_size != total:
+        raise ValueError(f"Completed file size does not match the source: {source}")
+    updated = parsedate_to_datetime(modified).date().isoformat() if modified else None
+    return path, updated
 
 
 def digest(path):
