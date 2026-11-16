@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17201c">
+  <meta name="description" content="Search the federal register for dormant legal names, old technology companies, amalgamations, and the organizations still on the books.">
+  <title>Corporate Ghosts · CoolCode</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#explorer">Skip to search</a>
+  <header><div class="wrap mast"><a id="coolcode" class="brand" href="https://coolcode.ca/"><span class="logo-mark" aria-hidden="true">&gt;_</span>CoolCode.ca</a><a href="#about">Sources &amp; coverage ↓</a></div></header>
+  <section class="hero" aria-labelledby="title">
+    <div class="wrap hero-inner">
+      <div><p class="eyebrow">FEDERAL CORPORATIONS REGISTER</p><h1 id="title">Corporate Ghosts</h1><p>Search the federal register for dormant legal names, old technology companies, amalgamations, and the organizations still on the books.</p></div>
+      <div class="readout"><strong id="total">—</strong><span>federal records</span></div>
+    </div>
+  </section>
+  <main id="explorer" class="wrap workspace">
+    <section class="panel search-panel" aria-label="Search tools">
+      <form role="search" id="search-form">
+        <label for="query">Search legal names, corporation numbers, or status details</label>
+        <div class="search-row"><input type="search" id="query" placeholder="Try telegraph, multimedia, or an exact corporation number" maxlength="180" autocomplete="off"><button type="button" id="clear">Clear</button></div>
+      </form>
+      <p class="hint">Matching is case and accent insensitive. Put words in quotes to keep them together.</p>
+      <div class="chips" id="choices" aria-label="Suggested searches"></div>
+      <div class="controls">
+        <label>Register subset<select id="group" disabled><option value="">All four subsets</option></select></label>
+        <label>Published status<select id="type" disabled><option value="">All statuses</option></select></label>
+        <label>Sort results<select id="sort"><option value="best">Best match</option><option value="name">Name A–Z</option><option value="oldest">Oldest first</option><option value="newest">Newest first</option></select></label>
+      </div>
+    </section>
+    <div class="columns">
+      <section aria-labelledby="result-title">
+        <div class="result-head"><div><h2 id="result-title">Corporation records</h2><p id="status" role="status">Reading the snapshot…</p></div></div>
+        <div id="records"></div>
+        <nav id="pages" aria-label="Results pages" hidden><button id="prev">← Previous</button><span id="page-info"></span><button id="next">Next →</button></nav>
+      </section>
+      <aside class="sidebar">
+        
+        <section id="about" class="panel note">
+          <h2>What’s in the index</h2><p>The index covers the four English federal downloads from Innovation, Science and Economic Development Canada. It includes legal names, registration locality, governing legislation, and published status. Choose a subset for a smaller first download.</p>
+          <p>Inactive or dissolved status is a legal record, not a finding of misconduct. Name forms are the current export’s legal-name variants, not a complete renaming history. Use the official register to investigate previous legal names. Provincial and territorial corporations are outside this dataset.</p>
+          <dl><dt>Built</dt><dd id="built">—</dd></dl>
+          <h2>Source downloads</h2>
+          <ul id="sources"></ul>
+          <a href="https://open.canada.ca/data/en/dataset/0032ce54-c5dd-4b66-99a0-320a7b5e99f2">Official catalogue ↗</a>
+        </section>
+      </aside>
+    </div>
+  </main>
+  <footer><div class="wrap"><span>Corporate Ghosts · Contains information licensed under the <a href="https://open.canada.ca/en/open-government-licence-canada/">Open Government Licence – Canada</a>.</span><a href="https://github.com/jsdyer/corporateghosts">Source code ↗</a></div></footer>
+  <dialog id="detail" aria-labelledby="detail-title">
+    <div class="detail-head"><div><h2 id="detail-title"></h2><p id="detail-meta" class="record-meta"></p></div><form method="dialog"><button aria-label="Close record">Close ×</button></form></div>
+    <dl class="fields" id="detail-fields"></dl>
+    <div class="actions" id="detail-actions"></div>
+    <p id="detail-status" class="hint" role="status"></p>
+  </dialog>
+</body>
+</html>
