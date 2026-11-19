@@ -1,6 +1,14 @@
 # Corporate Ghosts
 
-A browser-only explorer for Canada's federal corporate register. Search legal-name forms, corporation numbers, governing laws, locality and status descriptions. Use the four register subsets, reported status and anniversary-date sorting to investigate historical patterns. Inactive status alone does not indicate wrongdoing.
+A browser explorer for federal corporations, BC OrgBook registrations and Nova Scotia co-operatives. Search legal-name forms, corporation numbers, governing laws, locality and status descriptions. Use the four register subsets, reported status and anniversary-date sorting to investigate historical patterns. Inactive status alone does not indicate wrongdoing.
+
+<!-- coolcode:guide -->
+Open BC historical registrations and look for GLOBAL TELEGRAPH LIMITED (BC0401241). In Nova Scotia, ABC HOUSING CO-OPERATIVE LIMITED is registry ID 3057952. Take an NS ID to RJSC Connect for the official file.
+<!-- /coolcode:guide -->
+
+The [provincial search](https://coolcode.ca/corporateghosts/provinces.html) calls the documented [OrgBook BC v4 API](https://bcgov.github.io/orgbook-bc-api-docs/api/) on submission, with separate current and historical queries and upstream pagination. Each BC result opens the official organization profile. The Nova Scotia search runs locally against [the province's co-operative register](https://data.novascotia.ca/d/k29k-n2db), retaining name, ID, town, incorporation date, organization type and profit classification. The June 8, 2026 edition has 369 records. Refresh the bundled edition with `python3 scripts/ns_coops.py`. Contains information licensed under the [Open Government Licence – Nova Scotia](https://novascotia.ca/opendata/licence.asp).
+
+For other NS entity types, open [RJSC Connect](https://rjsc.novascotia.ca/). For Alberta, British Columbia, Manitoba, Nova Scotia, Ontario, Québec and Saskatchewan, use [Canada’s Business Registries](https://ised-isde.canada.ca/cbr-rec/en/) directly. Its service restricts automated search and copying. Federal results remain a distinct index.
 
 The published [Federal Corporations dataset](https://open.canada.ca/data/en/dataset/0032ce54-c5dd-4b66-99a0-320a7b5e99f2) supplies four typically daily CSVs in each official language. This build uses the four English CSVs and keeps both legal name forms where published. It omits street addresses, business numbers and director information. This is federal coverage, so provincial, territorial and financial-sector incorporations may be absent. The CSV does not provide a complete history of legal names. Follow the record's link to Corporations Canada and search its corporation number for the current official profile.
 

@@ -1,0 +1,50 @@
+{
+  "id": "corporateghosts",
+  "title": "Corporate Ghosts",
+  "description": "Search federal corporations, current and historical BC registrations, and Nova Scotia co-operatives by name or registry ID.",
+  "category": "disclosures",
+  "tags": [
+    "company",
+    "registry",
+    "corporation",
+    "legal"
+  ],
+  "icon": "building-2",
+  "url": "/corporateghosts/",
+  "source": "https://github.com/jsdyer/corporateghosts",
+  "hosting": "project",
+  "access": "browser",
+  "data_info": {
+    "mode": "mixed",
+    "detail": "Federal register snapshots, live BC OrgBook search and the published Nova Scotia co-operative list cover different jurisdictions.",
+    "cadence": "Daily federal build",
+    "probes": [
+      {
+        "label": "Federal snapshot",
+        "url": "https://coolcode.ca/corporateghosts/data/manifest.json",
+        "path": [
+          "built"
+        ],
+        "count_at": {
+          "path": [
+            "count"
+          ],
+          "unit": "federal records"
+        }
+      },
+      {
+        "label": "Nova Scotia register",
+        "url": "https://coolcode.ca/corporateghosts/ns-coops.json",
+        "path": [
+          "as_of"
+        ],
+        "count_at": {
+          "path": [
+            "count"
+          ],
+          "unit": "co-operatives"
+        }
+      }
+    ]
+  }
+}

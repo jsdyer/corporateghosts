@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en-CA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Provincial registers · Corporate Ghosts</title><link rel="stylesheet" href="./style.css"><script type="module" src="./provinces.mjs"></script></head>
+<body><header><div class="wrap mast"><a class="brand" href="./">← Corporate Ghosts</a><a href="https://coolcode.ca/">CoolCode.ca</a></div></header>
+<section class="hero"><div class="wrap hero-inner"><div><h1>Provincial registers</h1><p>Find a BC registration or a Nova Scotia co-operative. Use the official registries below for other businesses and provinces.</p></div></div></section>
+<main class="wrap workspace"><section class="panel search-panel"><form id="regional-form" role="search">
+<div class="controls"><label>Registry<select id="province"><option value="bc">British Columbia · OrgBook</option><option value="ns">Nova Scotia · co-operatives</option></select></label>
+<label id="status-field">BC registration<select id="history"><option value="true">Historical</option><option value="false">Current</option></select></label></div>
+<label for="term">Name or registry ID</label><div class="search-row"><input type="search" id="term" maxlength="120" autocomplete="off"><button type="submit">Search</button></div>
+<p id="scope" class="hint"></p><div class="chips"><button type="button" id="example"></button></div></form></section>
+<section><h2>Registration results</h2><p id="result-status" role="status"></p><div id="matches"></div>
+<nav id="paging" hidden aria-label="Provincial results pages"><button type="button" id="prev">Previous</button><span id="page"></span><button type="button" id="next">Next</button></nav></section>
+<section class="panel note"><h2>Other company registrations</h2>
+<p>Search all Nova Scotia businesses and societies by name or registry ID in <a href="https://rjsc.novascotia.ca/">RJSC Connect ↗</a>. Choose active or inactive status there. <a href="https://www.novascotia.ca/search-business-or-non-profit-information-filed-registry-joint-stock-companies">Nova Scotia’s search instructions ↗</a></p>
+<p>For Alberta, British Columbia, Manitoba, Nova Scotia, Ontario, Québec and Saskatchewan, use <a href="https://ised-isde.canada.ca/cbr-rec/en/">Canada’s Business Registries ↗</a>. The national service asks visitors to accept its terms. Search there by name, business number or registry ID.</p>
+<p><a href="./">Search the federal register in Corporate Ghosts ↗</a></p>
+<h2>Data sources</h2><p><a href="https://orgbook.gov.bc.ca/">OrgBook BC ↗</a> receives your BC search term when you submit it. Current and historical registrations are separate searches. The NS directory searches a downloaded edition locally. <a href="https://data.novascotia.ca/d/k29k-n2db">NS co-operative register ↗</a> · <a href="https://novascotia.ca/opendata/licence.asp">Open Government Licence – Nova Scotia ↗</a></p></section>
+</main></body></html>
