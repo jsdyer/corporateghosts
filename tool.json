@@ -17,7 +17,7 @@
   "data_info": {
     "mode": "mixed",
     "detail": "Federal register snapshots, live BC OrgBook search and the published Nova Scotia co-operative list cover different jurisdictions.",
-    "cadence": "Daily federal build",
+    "cadence": "Daily",
     "probes": [
       {
         "label": "Federal snapshot",
