@@ -22,3 +22,11 @@ Open http://127.0.0.1:8000/. Python 3.11+ is used at build time. A recent browse
 Use `--inputs` with a folder of four locally downloaded CSVs (`active-cbca.csv`, `active-non-cbca.csv`, `inactive-or-dissolved-cbca.csv`, `inactive-or-dissolved-non-cbca.csv`) to reproduce a source snapshot. Source SHA-256 hashes, downloads, and update dates are in `dist/data/manifest.json`. The GitHub Pages workflow builds and refreshes the dataset daily, on relevant source changes, and on manual runs without committing raw CSV files. Searches across all four groups require more data than a single-subset search. A failed download or invalid schema stops publication, keeping the last successful site available.
 
 Contains information licensed under the [Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada/). Source: Innovation, Science and Economic Development Canada.
+
+<!-- schedule-reliability -->
+## Schedule reliability
+
+Public GitHub repositories can have scheduled workflows disabled after 60 days of inactivity. A separate weekly [schedule guard](.github/workflows/schedule-guard.yml) calls GitHub's enable-workflow API for an explicit list of refresh workflows and itself. It can restore workflows disabled for inactivity, preserves manually disabled workflows, and runs independently of collection failures.
+
+This is an interim mitigation, not a scheduling guarantee: GitHub does not document active-workflow renewal as a permanent exemption, and scheduled runs can be delayed or dropped. A scheduler on our own Linux server is the planned independent trigger. The guard does not collect data, create dummy commits, or change source/check timestamps; successful collection and published data freshness still need monitoring.
+<!-- /schedule-reliability -->
