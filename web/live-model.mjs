@@ -5,3 +5,5 @@ function comparable(value,key){if(value===null||value===undefined||value==='')re
 export function changes(before,after){if(before.id!==after.id)throw new Error('Compare the same corporation number.');return Object.entries(labels).map(([key,label])=>({label,before:comparable(before[key],key),after:comparable(after[key],key)})).filter(x=>x.before!==x.after);}
 export function addCapture(saved,capture,maximum){if(!validRecord(capture))throw new Error('Invalid capture.');return [...saved.filter(x=>!(x.data.id===capture.data.id&&x.fetched_at===capture.fetched_at)),capture].slice(-Math.min(100,Math.max(1,maximum)));}
 export function parseSaved(raw,maximum){if(!raw)return [];if(raw.length>2_000_000)throw new Error('Saved captures are too large.');const items=JSON.parse(raw);if(!Array.isArray(items)||items.some(x=>!validRecord(x)))throw new Error('Saved captures are invalid.');return items.slice(-Math.min(100,Math.max(1,maximum)));}
+
+export function incorporationDate(record){return Array.isArray(record.filings)?record.filings.filter(f=>f.type==='incorporation'&&/^\d{4}-\d\d-\d\d$/.test(f.effectiveDate||'')).map(f=>f.effectiveDate).sort()[0]||null:null;}

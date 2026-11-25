@@ -33,6 +33,7 @@ with ThreadingHTTPServer(("127.0.0.1",0), partial(SimpleHTTPRequestHandler,direc
         page.locator('#lookup').click()
         page.locator('#live-name').get_by_text('Example Company <img>',exact=True).wait_for()
         assert 'intent to dissolve' in page.locator('#live-fields').inner_text()
+        assert '2020-01-01' in page.locator('#live-fields').inner_text()
         assert page.locator('img').count()==0
         page.locator('#save-capture').click()
         expect(page.locator('#live-status')).to_contain_text('Capture saved on this device')

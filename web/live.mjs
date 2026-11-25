@@ -1,5 +1,5 @@
 import {config} from './config.js';
-import {human,validRecord,changes,addCapture,parseSaved} from './live-model.mjs';
+import {human,validRecord,changes,addCapture,parseSaved,incorporationDate} from './live-model.mjs';
 const $=id=>document.getElementById(id),key='coolcode:corporateghosts:captures',create=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
 const button=(text,fn)=>{const b=create('button',text);b.type='button';b.onclick=fn;return b;};
 const stamp=date=>new Date(date).toLocaleString();
@@ -9,7 +9,7 @@ function download(value,name){const url=URL.createObjectURL(new Blob([JSON.strin
 function fields(container,rows){container.replaceChildren(...rows.flatMap(([name,value])=>[create('dt',name),create('dd',value||'Not returned')]));}
 function comparison(before,after){const section=create('section',undefined,'live-comparison');section.append(create('h3','Compared with saved capture · '+stamp(before.fetched_at)));const diffs=changes(before.data,after.data);if(!diffs.length)section.append(create('p','No changes in the compared fields. This does not prove no filing or other event occurred.'));for(const diff of diffs){const row=create('div',undefined,'change');row.append(create('strong',diff.label),create('p','Saved: '+diff.before),create('p','Selected: '+diff.after));section.append(row);}return section;}
 function render(response,isSaved=false){current=response;const d=response.data;$('live-results').hidden=false;$('live-name').textContent=d.legalName;$('live-date').textContent=(isSaved?'Saved capture':'API retrieval')+' · '+stamp(response.fetched_at)+' · Corporation '+d.id;$('save-capture').disabled=isSaved;
-fields($('live-fields'),[['Legal status',human(d.status)],['Status detail',human(d.statusDetail)],['Other legal-name form',d.alternateLegalName],['Governing legislation',human(d.legislation)],['Corporation type',human(d.corporationType)],['Registered office locality',d.locality],['Anniversary (not necessarily incorporation)',d.anniversaryDate]]);
+fields($('live-fields'),[['Legal status',human(d.status)],['Status detail',human(d.statusDetail)],['Other legal-name form',d.alternateLegalName],['Governing legislation',human(d.legislation)],['Corporation type',human(d.corporationType)],['Registered office locality',d.locality],['Incorporation effective date (returned filing)',incorporationDate(d)],['Anniversary (not necessarily incorporation)',d.anniversaryDate]]);
 $('live-directors').textContent=d.directors==null?'Director details were not returned.':d.directors.length?d.directors.map(x=>x.name+(x.changeType?' · '+human(x.changeType):'')).join('\n'):'No director entries returned. This is not evidence that no directors exist.';
 if(d.directorsTruncated)$('live-directors').append(document.createTextNode('\nShowing up to 200 directors. Consult the official record for full details.'));
 $('live-returns').textContent=d.annualReturns==null?'Annual-return compliance was not returned.':d.annualReturns.map(x=>x.year+': '+human(x.status)).join('\n')||'No annual-return entries returned.';
