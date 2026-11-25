@@ -4,7 +4,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import os, json
 from pathlib import Path
 from threading import Thread
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 root = Path(__file__).resolve().parents[1]
 with ThreadingHTTPServer(("127.0.0.1",0), partial(SimpleHTTPRequestHandler,directory=root / "dist")) as server:
@@ -35,8 +35,10 @@ with ThreadingHTTPServer(("127.0.0.1",0), partial(SimpleHTTPRequestHandler,direc
         assert 'intent to dissolve' in page.locator('#live-fields').inner_text()
         assert page.locator('img').count()==0
         page.locator('#save-capture').click()
+        expect(page.locator('#live-status')).to_contain_text('Capture saved on this device')
+        assert page.evaluate("JSON.parse(localStorage.getItem('coolcode:corporateghosts:captures')).length") == 1
         page.reload()
-        assert '1 saved captures' in page.locator('#saved-count').inner_text()
+        expect(page.locator('#saved-count')).to_contain_text('1 saved captures')
         version[0] = 1
         page.locator('#live-id').fill('1234567')
         page.locator('#lookup').click()
@@ -44,7 +46,7 @@ with ThreadingHTTPServer(("127.0.0.1",0), partial(SimpleHTTPRequestHandler,direc
         assert 'closed' in page.locator('#live-control').text_content()
         page.locator('#current-record > details > summary').click()
         page.locator('#clear-saved').click()
-        assert '0 saved captures' in page.locator('#saved-count').inner_text()
+        expect(page.locator('#saved-count')).to_contain_text('0 saved captures')
         assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
         assert not errors, errors
         assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
