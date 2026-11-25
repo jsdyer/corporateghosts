@@ -1,3 +1,4 @@
+import { businessSearchTerm } from "./identifiers.mjs";
 const cache = new Map();
 let request = 0;
 const size = 18;
@@ -54,6 +55,7 @@ async function run(data) {
     project(previous.rows, previous.total, data, data.page);
     return;
   }
+  const businessNumber=businessSearchTerm(data.query);
   const words = terms(data.query);
   const phrase = normalize(data.query.replaceAll('"', ""));
   const relevance = row => !phrase ? 0 : row[7].startsWith(phrase) || row[2].toLowerCase() === phrase ? 1 : 0;
@@ -75,7 +77,7 @@ async function run(data) {
       for (const row of rows) {
         if (data.type && data.type !== row[3]) continue;
         const haystack = row[7];
-        if (!words.every(word => haystack.includes(word))) continue;
+        if (businessNumber ? row[5]?.[5] !== businessNumber && row[2] !== businessNumber : !words.every(word => haystack.includes(word))) continue;
         groupResults.push(row);
       }
       total += groupResults.length;

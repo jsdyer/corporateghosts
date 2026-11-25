@@ -1,3 +1,4 @@
+import { businessSearchTerm } from "./identifiers.mjs";
 const byId = id => document.getElementById(id);
 const origin = 'https://orgbook.gov.bc.ca';
 const form = byId('regional-form');
@@ -30,10 +31,10 @@ function explain() {
   const bc = province.value === 'bc';
   byId('status-field').hidden = !bc;
   byId('scope').textContent = bc
-    ? 'Search by legal name or BC Registries ID. Each result opens the organization’s verified credentials.'
+    ? 'Search by legal name, CRA business number or BC Registries ID. Each result opens the organization’s verified credentials.'
     : 'Search a co-operative name, registry ID, town or type. For other company types, use RJSC Connect below.';
   byId('example').textContent = bc ? 'Try historical telegraph companies' : 'Try Dartmouth housing co-ops';
-  term.placeholder = bc ? 'Telegraph or BC0401241' : 'Dartmouth housing or 3057952';
+  term.placeholder = bc ? 'Legal name, 9-digit CRA BN or BC ID' : 'Dartmouth housing or 3057952';
 }
 
 function save() {
@@ -48,7 +49,7 @@ async function search(page = 1) {
   const request = ++generation;
   controller?.abort();
   controller = new AbortController();
-  const q = term.value.trim();
+  const q = businessSearchTerm(term.value) || term.value.trim();
   const bc = province.value === 'bc';
   current = page;
   save();
@@ -72,10 +73,11 @@ async function search(page = 1) {
       if (!Array.isArray(data.results) || !Number.isFinite(data.total)) throw Error('Unexpected OrgBook BC response');
       cards = data.results.map(row => {
         const name = row.names.find(n => n.type === 'entity_name')?.text || row.names[0]?.text || row.source_id;
-        const detail = [row.source_id, row.inactive ? 'Historical registration' : 'Current registration'];
+        const bn=row.names.find(n => n.type === 'business_number')?.text;
+        const detail = [row.source_id, row.inactive ? 'Historical registration' : 'Current registration',bn && 'CRA business number '+bn].filter(Boolean);
         const registered = row.attributes.find(a => a.type === 'registration_date')?.value;
         if (registered) detail.push('Registered ' + registered.slice(0,10));
-        return recordCard(name,detail.join(' · '),origin + '/en/organization/' + encodeURIComponent(row.source_id),'Open OrgBook record ↗');
+        return recordCard(name,detail.join(' · '),origin + '/entity/' + encodeURIComponent(row.source_id),'Open OrgBook record ↗');
       });
       total = data.total;
       lastPage = Math.ceil(total/data.page_size);
@@ -113,7 +115,7 @@ async function search(page = 1) {
 
 province.value = state.get('province') === 'ns' ? 'ns' : 'bc';
 term.value = (state.get('q') || '').slice(0,120);
-historyField.value = state.get('historical') === 'false' ? 'false' : 'true';
+historyField.value = state.get('historical') === 'true' ? 'true' : 'false';
 form.addEventListener('submit', e => {e.preventDefault(); search();});
 province.addEventListener('change', () => {term.value = ''; explain(); search();});
 historyField.addEventListener('change', () => search());

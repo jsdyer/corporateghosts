@@ -7,7 +7,7 @@ export const config = {
   introTitle: "Look up a corporation",
   idLabel: "Corporation number",
   dateLabel: "Anniversary",
-  fields: ["Second legal-name form", "Governing legislation", "Status detail", "Last annual filing year", "Last annual meeting"],
+  fields: ["Second legal-name form", "Governing legislation", "Status detail", "Last annual filing year", "Last annual meeting", "CRA business number (published snapshot)"],
   officialLabel: "Open Corporations Canada search ↗",
   officialLink: () => "https://ised-isde.canada.ca/cc/lgcy/fdrlCrpSrch.html?locale=en_CA",
   examples: [

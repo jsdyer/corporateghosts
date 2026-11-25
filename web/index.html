@@ -26,24 +26,25 @@
   <main id="explorer" class="wrap workspace">
     <section class="panel note"><h2>Which register?</h2><p>The search below covers federally incorporated organizations. For a provincial registration, choose <a href="./provinces.html?province=bc">British Columbia</a> or <a href="./provinces.html?province=ns">Nova Scotia</a>. <a href="https://ised-isde.canada.ca/cbr-rec/en/">Other participating provinces ↗</a></p></section>
     <section class="panel" id="current-record" aria-labelledby="live-heading">
-      <p class="eyebrow">CURRENT FEDERAL RECORD</p><h2 id="live-heading">Check a corporation number</h2>
-      <p>Already have the federal number? Retrieve status, directors, filings and available significant-control statements. Or search the dated name index below and open a result.</p>
-      <form id="live-form" class="search-row"><label for="live-id">Federal corporation number<input id="live-id" inputmode="numeric" pattern="[0-9]{1,12}" maxlength="12" placeholder="Corporation number" required></label><button id="lookup" type="submit">Look up current record</button></form>
-      <p id="live-status" role="status" aria-live="polite"></p>
+      <p class="eyebrow">CURRENT FEDERAL RECORD</p><h2 id="live-heading">Check a corporation or CRA business number</h2>
+      <p>Enter a federal corporation number or a nine-digit CRA business number (BN). A BN is matched to its published federal corporation number before requesting current details. Provincial businesses use the separate registers below.</p>
+      <form id="live-form" class="search-row"><label for="live-id">Corporation number or CRA business number<input id="live-id" maxlength="40" placeholder="Federal number or 9-digit CRA BN" autocomplete="off" required></label><label for="live-kind">Number type<select id="live-kind"><option value="auto">Detect automatically</option><option value="business">CRA business number</option><option value="corporation">Federal corporation number</option></select></label><button id="lookup" type="submit">Look up current record</button></form><p class="hint">Nine digits are treated as a CRA business number. Spaces, hyphens and CRA program-account suffixes such as RC0001 are accepted. Select Federal corporation number to override detection.</p>
+      <p id="live-status" role="status" aria-live="polite"></p><div id="live-matches" class="hint"></div>
       <p class="hint">A legal registration does not prove a website belongs to that business, operates honestly, or is currently trading. A missing federal match may be registered provincially or under separate financial legislation.</p>
       <div id="live-results" hidden><h3 id="live-name"></h3><p id="live-date"></p><dl id="live-fields" class="fields"></dl>
       <details open><summary>Directors and annual returns</summary><h4>Directors in the returned record</h4><p id="live-directors" class="multiline"></p><h4>Annual return compliance</h4><p id="live-returns" class="multiline"></p></details>
       <details><summary>Individuals with significant control</summary><p>These are dated person statements, including any closed records returned. They are not a verified current ownership list. Names are shown when published; residential addresses and dates of birth are omitted.</p><p id="live-control" class="multiline"></p></details>
       <details><summary>Filing timeline</summary><p>Received and effective dates describe different events. An anniversary date alone does not establish the incorporation date.</p><ol id="live-filings"></ol></details>
       <div id="live-comparison"></div><div class="actions"><button id="save-capture" type="button">Save dated capture on this device</button><button id="export-capture" type="button">Export this capture</button><a href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpSrch.html?locale=en_CA">Verify in the official register ↗</a></div></div>
-      <details><summary>Saved comparisons</summary><p id="saved-count"></p><ul id="saved-captures"></ul><div class="actions"><button id="export-saved" type="button">Export saved captures</button><button id="clear-saved" type="button">Clear saved captures</button></div><p>Saved only when requested, in this browser. Refreshing retains them. Shared browsers share these captures. The corporation number is sent to CoolCode’s gateway and ISED on lookup; there is no background monitoring or account.</p></details>
+      <details><summary>Saved comparisons</summary><p id="saved-count"></p><ul id="saved-captures"></ul><div class="actions"><button id="export-saved" type="button">Export saved captures</button><button id="clear-saved" type="button">Clear saved captures</button></div><p>Saved only when requested, in this browser. Refreshing retains them. Shared browsers share these captures. The resolved federal corporation number is sent to CoolCode’s gateway and ISED on lookup; there is no background monitoring or account.</p></details>
     </section>
     <section class="panel search-panel" aria-label="Search tools">
       <form role="search" id="search-form">
-        <label for="query">Search legal names, corporation numbers, or status details</label>
-        <div class="search-row"><input type="search" id="query" placeholder="Try telegraph, multimedia, or an exact corporation number" maxlength="180" autocomplete="off"><button type="button" id="clear">Clear</button></div>
+        <label for="query">Search legal names, corporation numbers, CRA business numbers or status details</label>
+        <div class="search-row"><input type="search" id="query" placeholder="Try a legal name, federal corporation number or CRA BN" maxlength="180" autocomplete="off"><button type="button" id="clear">Clear</button></div>
       </form>
       <p class="hint">Matching is case and accent insensitive. Put words in quotes to keep them together.</p>
+      <p id="number-guidance" class="hint" hidden></p>
       <div class="chips" id="choices" aria-label="Suggested searches"></div>
       <div class="controls">
         <label>Register subset<select id="group" disabled><option value="">All four subsets</option></select></label>
@@ -60,7 +61,7 @@
       <aside class="sidebar">
         
         <section id="about" class="panel note">
-          <h2>What’s in the index</h2><p>The index covers the four English federal downloads from Innovation, Science and Economic Development Canada. It includes legal names, registration locality, governing legislation, and published status. Choose a subset for a smaller first download.</p>
+          <h2>What’s in the index</h2><p>The index covers the four English federal downloads from Innovation, Science and Economic Development Canada. It includes legal names, published CRA business numbers, registration locality, governing legislation, and published status. Choose a subset for a smaller first download.</p>
           <p>Inactive or dissolved status is a legal record, not a finding of misconduct. Name forms are the current export’s legal-name variants, not a complete renaming history. Use the official register to investigate previous legal names. Provincial and territorial corporations are outside this dataset.</p>
           <dl><dt>Built</dt><dd id="built">—</dd></dl>
           <h2>Source downloads</h2>

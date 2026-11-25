@@ -1,5 +1,6 @@
 import { lookupCorporation } from "./live.mjs";
 import { config } from "./config.js";
+import { businessSearchTerm } from "./identifiers.mjs";
 
 const $ = id => document.getElementById(id);
 const count = value => new Intl.NumberFormat("en-CA").format(value);
@@ -82,6 +83,14 @@ function search(keepPage = false) {
   if (!manifest || !worker) return;
   if (!keepPage) currentPage = 1;
   const q = query.value.trim();
+  const number=businessSearchTerm(q), guidance=$("number-guidance");
+  guidance.hidden=!number;
+  guidance.replaceChildren();
+  if(number){
+    const bc=create("a","Search this CRA business number in British Columbia");
+    bc.href="./provinces.html?"+new URLSearchParams({province:"bc",q:number,historical:"false"});
+    guidance.append("This index covers federal corporations. For a provincial business: ",bc,". ",button("Match this BN to a current federal record",()=>{lookupCorporation(number,"business");$("current-record").scrollIntoView({behavior:"smooth"});}));
+  }
   const allowed = q.length >= 2 || group.value || type.value || browse;
   latest++;
   saveLocation();
@@ -143,7 +152,7 @@ function render(data) {
   }));
   if (!data.total) {
     const empty = create("div", null, "panel empty");
-    empty.append(create("h3", "No records match"), create("p", "Try fewer words or clear the filters."), button("Clear filters", reset));
+    empty.append(create("h3", "No records match"), create("p", businessSearchTerm(query.value) ? "No federal snapshot match. A CRA business number may belong to a provincial business; use the British Columbia link above or another official provincial register." : "Try fewer words or clear the filters."), button("Clear filters", reset));
     root.append(empty);
   }
   renderMap(data.rows);
