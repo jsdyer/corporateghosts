@@ -1,13 +1,16 @@
 {
   "id": "corporateghosts",
   "title": "Corporate Ghosts",
-  "description": "Search federal corporations, current and historical BC registrations, and Nova Scotia co-operatives by name or registry ID.",
+  "description": "Search Canadian corporation names and numbers, check current federal status, directors and filings, and compare saved records.",
   "category": "disclosures",
   "tags": [
     "company",
     "registry",
     "corporation",
-    "legal"
+    "legal",
+    "directors",
+    "filings",
+    "business verification"
   ],
   "icon": "building-2",
   "url": "/corporateghosts/",
@@ -16,7 +19,7 @@
   "access": "browser",
   "data_info": {
     "mode": "mixed",
-    "detail": "Federal register snapshots, live BC OrgBook search and the published Nova Scotia co-operative list cover different jurisdictions.",
+    "detail": "Daily federal name snapshots, on-demand federal API details, live BC OrgBook search and the published NS co-operative register have distinct coverage.",
     "cadence": "Daily",
     "probes": [
       {

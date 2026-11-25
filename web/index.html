@@ -4,8 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#17201c">
-  <meta name="description" content="Search the federal register for dormant legal names, old technology companies, amalgamations, and the organizations still on the books.">
-  <title>Corporate Ghosts · CoolCode</title>
+  <link rel="canonical" href="https://coolcode.ca/corporateghosts/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Corporate Ghosts — Canadian corporation search">
+  <meta property="og:url" content="https://coolcode.ca/corporateghosts/">
+  <meta name="description" content="Search Canadian corporation names and numbers, view federal status, directors and filings, and compare dated records.">
+  <title>Search Canadian corporation records and federal filings · Corporate Ghosts</title>
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="./app.js"></script>
 <script defer src="/assets/tool-metrics.js" referrerpolicy="no-referrer"></script>
@@ -21,6 +25,19 @@
   </section>
   <main id="explorer" class="wrap workspace">
     <section class="panel note"><h2>Which register?</h2><p>The search below covers federally incorporated organizations. For a provincial registration, choose <a href="./provinces.html?province=bc">British Columbia</a> or <a href="./provinces.html?province=ns">Nova Scotia</a>. <a href="https://ised-isde.canada.ca/cbr-rec/en/">Other participating provinces ↗</a></p></section>
+    <section class="panel" id="current-record" aria-labelledby="live-heading">
+      <p class="eyebrow">CURRENT FEDERAL RECORD</p><h2 id="live-heading">Check a corporation number</h2>
+      <p>Already have the federal number? Retrieve status, directors, filings and available significant-control statements. Or search the dated name index below and open a result.</p>
+      <form id="live-form" class="search-row"><label for="live-id">Federal corporation number<input id="live-id" inputmode="numeric" pattern="[0-9]{1,12}" maxlength="12" placeholder="Corporation number" required></label><button id="lookup" type="submit">Look up current record</button></form>
+      <p id="live-status" role="status" aria-live="polite"></p>
+      <p class="hint">A legal registration does not prove a website belongs to that business, operates honestly, or is currently trading. A missing federal match may be registered provincially or under separate financial legislation.</p>
+      <div id="live-results" hidden><h3 id="live-name"></h3><p id="live-date"></p><dl id="live-fields" class="fields"></dl>
+      <details open><summary>Directors and annual returns</summary><h4>Directors in the returned record</h4><p id="live-directors" class="multiline"></p><h4>Annual return compliance</h4><p id="live-returns" class="multiline"></p></details>
+      <details><summary>Individuals with significant control</summary><p>These are dated person statements, including any closed records returned. They are not a verified current ownership list. Names are shown when published; residential addresses and dates of birth are omitted.</p><p id="live-control" class="multiline"></p></details>
+      <details><summary>Filing timeline</summary><p>Received and effective dates describe different events. An anniversary date alone does not establish the incorporation date.</p><ol id="live-filings"></ol></details>
+      <div id="live-comparison"></div><div class="actions"><button id="save-capture" type="button">Save dated capture on this device</button><button id="export-capture" type="button">Export this capture</button><a href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpSrch.html?locale=en_CA">Verify in the official register ↗</a></div></div>
+      <details><summary>Saved comparisons</summary><p id="saved-count"></p><ul id="saved-captures"></ul><div class="actions"><button id="export-saved" type="button">Export saved captures</button><button id="clear-saved" type="button">Clear saved captures</button></div><p>Saved only when requested, in this browser. Refreshing retains them. Shared browsers share these captures. The corporation number is sent to CoolCode’s gateway and ISED on lookup; there is no background monitoring or account.</p></details>
+    </section>
     <section class="panel search-panel" aria-label="Search tools">
       <form role="search" id="search-form">
         <label for="query">Search legal names, corporation numbers, or status details</label>
@@ -36,7 +53,7 @@
     </section>
     <div class="columns">
       <section aria-labelledby="result-title">
-        <div class="result-head"><div><h2 id="result-title">Corporation records</h2><p id="status" role="status">Reading the snapshot…</p></div></div>
+        <div class="result-head"><div><h2 id="result-title">Dated federal name index</h2><p id="status" role="status">Reading the snapshot…</p></div></div>
         <div id="records"></div>
         <nav id="pages" aria-label="Results pages" hidden><button id="prev">← Previous</button><span id="page-info"></span><button id="next">Next →</button></nav>
       </section>

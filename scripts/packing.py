@@ -132,12 +132,34 @@ def prepare(root, staging):
 def pack(staging, group, label, rows):
     files = []
     for offset in range(0, len(rows), CHUNK):
-        name = f"{group}-{offset // CHUNK + 1:03d}.json.gz"
+        payload = json.dumps(rows[offset:offset + CHUNK], ensure_ascii=False, separators=(",", ":"))
+        version = hashlib.sha256(payload.encode()).hexdigest()[:16]
+        name = f"{group}-{offset // CHUNK + 1:03d}-{version}.json.gz"
         with (staging / "data" / name).open("wb") as out:
-            payload = json.dumps(rows[offset:offset + CHUNK], ensure_ascii=False, separators=(",", ":"))
             out.write(gzip.compress(payload.encode(), compresslevel=5, mtime=0))
         files.append(name)
     return {"id": group, "label": label, "count": len(rows), "shards": files}
+
+
+def version_assets(staging):
+    """Keep modules, styles, data manifests and provincial data in one release graph."""
+    hash = hashlib.sha256()
+    for path in sorted(staging.rglob("*")):
+        if path.is_file():
+            hash.update(path.relative_to(staging).as_posix().encode())
+            hash.update(digest(path).encode())
+    version = hash.hexdigest()[:16]
+    def rewrite(match):
+        quote, relative = match.group(1), match.group(2)
+        target = staging / relative.removeprefix("./")
+        if target.is_file() and target.suffix in {".js", ".mjs", ".css", ".json"}:
+            return f"{quote}{relative}?v={version}{quote}"
+        return match.group(0)
+    refs = re.compile(r"([\"'])(\./[^\"'?]+)\1")
+    for path in staging.iterdir():
+        if path.suffix in {".html", ".js", ".mjs"}:
+            path.write_text(refs.sub(rewrite, path.read_text(encoding="utf-8")), encoding="utf-8")
+    return version
 
 
 def finish(output, staging, groups, types, sources, extra=None):
@@ -149,6 +171,8 @@ def finish(output, staging, groups, types, sources, extra=None):
     if extra:
         manifest.update(extra)
     write(staging / "data" / "manifest.json", manifest)
+    version_assets(staging)
+    (staging / ".nojekyll").touch()
     if output.exists():
         shutil.rmtree(output)
     staging.replace(output)

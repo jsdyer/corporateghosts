@@ -1,3 +1,4 @@
+import { lookupCorporation } from "./live.mjs";
 import { config } from "./config.js";
 
 const $ = id => document.getElementById(id);
@@ -105,9 +106,10 @@ function openRecord(row) {
   const details = $("detail-fields");
   details.replaceChildren(...fields.filter(([label, value]) => label && value).flatMap(([label, value]) => [create("dt", label), create("dd", value)]));
   const status = $("detail-status");
-  status.textContent = "";
+  status.textContent = "Snapshot result from the published CSV edition. Use the current API record for detailed federal evidence.";
   const actions = $("detail-actions");
   actions.replaceChildren(link(config.officialLabel, config.officialLink(row), "button primary"));
+  actions.append(button("Get current federal API record", () => { $("detail").close(); lookupCorporation(row[2]); $("current-record").scrollIntoView({behavior:"smooth"}); }));
   if (!config.map) actions.append(button("Copy corporation number", async () => {
     try { await navigator.clipboard.writeText(row[2]); status.textContent = "Corporation number copied."; }
     catch { status.textContent = `Corporation number: ${row[2]}`; }
